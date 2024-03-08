@@ -1,4 +1,4 @@
-# It's an app that helps you to working out on gym, ant trace your progress. Additionally you can download your excercises by EST API
+# It's an app that helps you to working out on gym, ant trace your progress. Additionally you can download your excercises by REST API
 
 
 ## Used technologies:
@@ -17,4 +17,4 @@
 4. Next go to your browser and write: 127.0.0.1:8000
 5. You can run the GYM-Organizer
 
-
+In the future, there will be developed an option to track your progress

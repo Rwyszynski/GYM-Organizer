@@ -84,10 +84,10 @@ WSGI_APPLICATION = 'GYM.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'GYM',
+        'NAME': 'gym',
         'HOST': 'localhost',
-        'PASSWORD': 'robo',
-        'USER': 'robo',
+        'PASSWORD': '1robo1',
+        'USER': 'postgres',
         'PORT': 5432
     }
 }

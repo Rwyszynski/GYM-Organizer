@@ -21,4 +21,17 @@ from excercises import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-]
+    path('', views.Index.as_view(), name='index'),
+    path('aboutus/', views.AboutUs.as_view(), name='about_us'),
+    path('createuser/', views.CreateUserView.as_view(), name='create_user'),
+    path('homepage/', views.HomepageView.as_view(), name='homepage'),
+    path('show_plan/', views.ShowUserPlan.as_view(), name='show_user_plan'),
+    path('show_workouts/', views.AllWorkouts.as_view(), name='show_all_workouts'),
+    path('show_warmups/', views.AllWarmups.as_view(), name='show_all_warmups'),
+    path('show_stretchings/', views.AllStretchings.as_view(), name='show_all_stretch'),
+    path('plan_details/<int:planed_id>/', views.MyPlanDetails.as_view(), name='plan_details'),
+
+    path('form/', views.Form.as_view(), name='form'),
+    path('Add_workout_to_plan.as_view/', views.Add_workout_to_plan.as_view(), name='add_workout_to_plan'),
+    path('details/', views.Details.as_view(), name='details'),
+    path('edit_plan/', views.Edit_plan.as_view(), name='edit_plan'),

@@ -11,6 +11,16 @@ from excercises.forms import CreateUserForm, LoginForm, CreatePlanForm, AddWorko
 from excercises.models import Quotes, MyPlan, WorkoutInPlan, StretchingInPlan, Workout, Strech, Stretching, Diet, \
     WarmupExercises
 
+from rest_framework import viewsets
+from .models import Exercises
+from .api import UserApi
+
+
+class ExerciseView(viewsets.ModelViewSet):
+    queryset = Exercises.objects.all()
+    serializer_class = UserApi
+
+
 class Index(View):
     #tu zrób stronę tytułową
 

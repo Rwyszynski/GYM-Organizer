@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render, redirect
 
 from django.contrib.auth import logout, authenticate, login
@@ -22,9 +23,9 @@ class ExerciseView(viewsets.ModelViewSet):
 
 
 class Index(View):
-    #tu zrób stronę tytułową
+    # tu zrób stronę tytułową
 
-    def get (self, request):
+    def get(self, request):
         quotes = list(Quotes.objects.all())
         if len(quotes) > 0:
             random.shuffle(quotes)
@@ -34,22 +35,24 @@ class Index(View):
         ctx = {'q1': q1}
 
         return render(request, 'index.html', ctx)
-    
+
+
 class AboutUs(View):
 
     # tu stwórz kartę z użytkownikiem 
 
-    def get (self, request):
+    def get(self, request):
         info = 'halo to ja'
         return render(request, 'abouts.html', {'helo': info})
 
-class CreateUserForm(View):
-    #Stwórz użytkowniak
+
+class CreateUser(View):
+    # Stwórz użytkowniak
 
     def get(self, request):
         form = CreateUserForm()
-        return render (request, 'form.html', {'form':form, 'info': 'Zacznij z nami'})
-        
+        return render(request, 'form.html', {'form': form, 'info': 'Zacznij z nami'})
+
     def post(self, request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
@@ -58,42 +61,47 @@ class CreateUserForm(View):
             user.set_password(password)
             user.save()
             return redirect('login')
-        return render(request, 'form.html', {'form':form, 'message': 'Złe dane'})
+        return render(request, 'form.html', {'form': form, 'message': 'Złe dane'})
+
 
 class LoginView(View):
-    #sprawdź czy użytkownk istnieje
-
     def get(self, request):
-        form = LoginForm(request.POST):
+        form = LoginForm()
+        return render(request, 'form.html', {'form': form})
+
+    def post(self, request):
+        form = LoginForm(request.POST)
         if form.is_valid():
             us = form.cleaned_data['username']
             pd = form.cleaned_data['password']
             user = authenticate(username=us, password=pd)
             if user is None:
-                return render(request, {'form.html', 'message': 'THIS USER DOES NOT EXIST'})
+                return render(request, 'form.html', {'form': form, 'message': 'THIS USER DOES NOT EXIST'})
             else:
                 login(request, user)
                 url = request.GET.get('next', 'homepage')
                 return redirect(url)
-        return render(request, 'form.html',{'form':form, 'message': "Zły login lub hasło"})
+        return render(request, 'form.html', {'form': form, 'message': 'Zły login lub hasło'})
 
 class LogoutView(LoginRequiredMixin, View):
-    #Strona wylogowania
+    # Strona wylogowania
     def get(self, request):
         logout(request)
-        return redirect ('index')
-    
+        return redirect('index')
+
+
 class HomepageView(LoginRequiredMixin, View):
-    #Zawartość tylko dla użytkownków
-    def get (self, request):
+    # Zawartość tylko dla użytkownków
+    def get(self, request):
         return render(request, 'homepage.html')
-    
-class CreateYourPlan(LoginRequired):
-    #Stwórz plan
+
+
+class CreateYourPlan(LoginRequiredMixin):
+    # Stwórz plan
     def get(self, request):
         form = CreatePlanForm()
         return render(request, 'form.html', {'form': form, 'info': 'Stwórz swoj plan'})
-    
+
     def post(self, request):
         form = CreatePlanForm(request.POST)
         if form.is_valid():
@@ -101,18 +109,19 @@ class CreateYourPlan(LoginRequired):
             name = form.cleaned_data['name']
             user_plan = MyPlan.objects.create(name=name, diet=diet, owner=request.user)
             return render(request, 'form.html', {'plan_added': 'Plan został dodany'})
-        return render (request, 'form.html', {'form', form, 'info': 'Złe dane'})
-    
+        return render(request, 'form.html', {'form': form, 'info': 'Złe dane'})
+
+
 class AddWorkoutToPlan(LoginRequiredMixin):
-    #dodaj plan dla użytkownika
+    # dodaj plan dla użytkownika
     def get(self, request):
         form = AddWorkoutToPlanForm()
         user = request.user
         plans = MyPlan.objects.filter(owner=user)
         form.fields['plan'].queryset = plans
-        return render(request, 'form.html', {'form':form, 'info': "Dodaj ćwiczenia do planu"})
-    
-    def post(self,request):
+        return render(request, 'form.html', {'form': form, 'info': "Dodaj ćwiczenia do planu"})
+
+    def post(self, request):
         form = AddWorkoutToPlanForm(request.POST)
         if form.is_valid():
             day = form.cleaned_data['day']
@@ -120,11 +129,12 @@ class AddWorkoutToPlan(LoginRequiredMixin):
             plan = form.cleaned_data['hour']
             hour = form.cleaned_data['hour']
             WorkoutInPlan.objects.create(day=day, workout=workout, plan=plan, hour=hour)
-            return render(request, 'form.html',{'add_train_to_plan': 'Dodano plan treningowy' 'plan':plan})
-        return render(request, 'form.html', {'form':form,'info':'Złe dane'})
-    
+            return render(request, 'form.html', {'add_train_to_plan': 'Dodano plan treningowy', 'plan': plan})
+        return render(request, 'form.html', {'form': form, 'info': 'Złe dane'})
+
+
 class AddStretchingToPlan(LoginRequiredMixin, View):
-    #Wybierz plan
+    # Wybierz plan
 
     def get(self, request):
         form = AddStretchingToPlanForm()
@@ -132,18 +142,19 @@ class AddStretchingToPlan(LoginRequiredMixin, View):
         plans = MyPlan.objects.filter(owner=user)
         form.fields['plan'].queryset = plans
         return render(request, 'form.html', {'form': form, 'info': 'DOdaj plan rozciągania'})
-    
+
     def post(self, request):
-        from = AddStretchingToPlanForm(request.POST)
+        form = AddStretchingToPlanForm(request.POST)
         if form.is_valid():
             day = form.cleaned_data['day']
             stretching = form.cleaned_data['plan']
             plan = form.cleaned_data['plan']
             hour = form.cleaned_data['plan']
             StretchingInPlan.objects.create(day=day, stretching=stretching, plan=plan, hour=hour)
-            return render(request, 'form.html', {'Dodano': form, 'plan':plan})
-        return render(request, 'form.html', {'form': form, 'info':'Złe dane'})
-    
+            return render(request, 'form.html', {'Dodano': form, 'plan': plan})
+        return render(request, 'form.html', {'form': form, 'info': 'Złe dane'})
+
+
 class ShowUserPlan(LoginRequiredMixin, View):
 
     def get(self, request):
@@ -151,16 +162,18 @@ class ShowUserPlan(LoginRequiredMixin, View):
         user_plan = MyPlan.objects.filter(owner=owner)
         return render(request, 'show_plan.html', {'user_plan': user_plan})
 
+
 class AllWorkouts(LoginRequiredMixin, View):
 
     def get(self, request):
         all_workouts = Workout.objects.all()
         return render(request, 'show_workouts.html', {'all_workouts': all_workouts})
 
+
 class AllWarmups(LoginRequiredMixin, View):
 
     def get(self, request):
-        all_warmups = WarmUp.objects.all()
+        all_warmups = WarmupExercises.objects.all()
         return render(request, 'show_warmups.html', {'all_warmups': all_warmups})
 
 
@@ -185,7 +198,7 @@ class ShowExercisesDetails_Workout(LoginRequiredMixin, View):
 class ShowExercisesDetails_Warmup(LoginRequiredMixin, View):
 
     def get(self, request, train_id):
-        warmup = WarmUp.objects.get(pk=train_id)
+        warmup = WarmupExercises.objects.get(pk=train_id)
         exercises = warmup.exercises.all()
         calories = 0
         for exercise in exercises:
@@ -202,6 +215,7 @@ class ShowExercisesDetails_Stretch(LoginRequiredMixin, View):
         for exercise in exercises:
             calories += exercise.burned_calories
         return render(request, 'details.html', {'exercises': exercises, 'calories': calories, 'stretch': stretch})
+
 
 class MyPlanDetails(LoginRequiredMixin, View):
 
@@ -269,7 +283,7 @@ class DeleteWarmup(UserPassesTestMixin, View):
         return self.request.user.is_superuser
 
     def get(self, request, warmup_id):
-        w = WarmUp.objects.get(pk=warmup_id)
+        w = WarmupExercises.objects.get(pk=warmup_id)
         w.delete()
         return redirect('show_all_warmups')
 
@@ -310,7 +324,7 @@ class CreateWarmUp(UserPassesTestMixin, View):
         if form.is_valid():
             title = form.cleaned_data['title']
             description = form.cleaned_data['description']
-            WarmUp.objects.create(title=title, description=description)
+            WarmupExercises.objects.create(title=title, description=description)
             return render(request, 'form.html', {'warmup_created': f'Warmup created'})
         return render(request, 'form.html', {'message': 'Incorrect data'})
 
@@ -325,7 +339,7 @@ class AddExercise_toWarmup(UserPassesTestMixin, View):
         return render(request, 'form.html', {'form': form, 'info': 'Choose exercise and add'})
 
     def post(self, request, warmup_id):
-        warmUp = WarmUp.objects.get(id=warmup_id)
+        warmUp = WarmupExercises.objects.get(id=warmup_id)
         form = AddExercisesToWarmupForm(request.POST)
         if form.is_valid():
             we = form.save(commit=False)
@@ -412,4 +426,4 @@ class AddExercise_toStretching(UserPassesTestMixin, View):
             se.stretching = stretch
             se.save()
             return render(request, 'form.html', {'exercises_added_3': 'Exercise added', 'stretch': stretch})
-        return render(request, 'form.html', {'message': 'Incorrect data'})                
+        return render(request, 'form.html', {'message': 'Incorrect data'})

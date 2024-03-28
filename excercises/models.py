@@ -30,17 +30,17 @@ class Strech(models.Model):
 
 
 intensity_choice = (
-    (1, 'for_begginers')
-    (2, 'for begginers but more advenced')
-    (3, 'for advanced ones')
+    (1, 'for_begginers'),
+    (2, 'for begginers but more advenced'),
+    (3, 'for advanced ones'),
 )
 
 
 class Workout(models.Model):
     title = models.CharField(max_length=32)
     description = models.TextField(max_length=200)
-    excercises = models.ManyToManyField(
-        Exercises, through='WorkoutExcercises')
+    exercises = models.ManyToManyField(
+        Exercises, through='WorkoutExercises')
     intensity = models.IntegerField(choices=intensity_choice)
     warmup = models.ForeignKey(Strech, on_delete=models.CASCADE)
 
@@ -52,7 +52,7 @@ class Stretching(models.Model):
     title = models.CharField(max_length=32)
     description = models.TextField(max_length=200)
     excercises = models.ManyToManyField(
-        Exercises, through='StretchingExcercises')
+        Exercises, through='StretchingExercises')
 
     def __str__(self):
         return f'{self.title}'
@@ -80,13 +80,13 @@ class MyPlan(models.Model):
 
 
 day_choice = (
-    (1, 'Monday')
-    (2, 'Tuesday')
-    (3, 'Wednesday')
-    (4, 'Thursday')
-    (5, 'Friday')
-    (6, 'Saturday')
-    (7, 'Sunday')
+    (1, 'Monday'),
+    (2, 'Tuesday'),
+    (3, 'Wednesday'),
+    (4, 'Thursday'),
+    (5, 'Friday'),
+    (6, 'Saturday'),
+    (7, 'Sunday'),
 
 )
 
@@ -112,7 +112,7 @@ class WarmupExercises(models.Model):
 
 class WorkoutExercises(models.Model):
     exercise = models.ForeignKey(Exercises, on_delete=models.CASCADE)
-    workout = models.ForeignKey(Strech, on_delete=models.CASCADE)
+    workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
 
 
 class StretchingExercises(models.Model):

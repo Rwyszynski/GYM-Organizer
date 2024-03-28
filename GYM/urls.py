@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from excercises import views
 
@@ -24,13 +24,13 @@ from excercises.views import UserApi
 
 
 router = routers.DefaultRouter()
-router.register('api', UserApi)
+router.register('api', UserApi, basename="User")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.Index.as_view(), name='index'),
     path('aboutus/', views.AboutUs.as_view(), name='about_us'),
-    path('createuser/', views.CreateUserView.as_view(), name='create_user'),
+    path('createuser/', views.CreateUser.as_view(), name='create_user'),
     path('homepage/', views.HomepageView.as_view(), name='homepage'),
     path('show_plan/', views.ShowUserPlan.as_view(), name='show_user_plan'),
     path('show_workouts/', views.AllWorkouts.as_view(), name='show_all_workouts'),
@@ -40,10 +40,9 @@ urlpatterns = [
     path('plan_details/<int:planed_id>/',
          views.MyPlanDetails.as_view(), name='plan_details'),
 
-    path('form/', views.Form.as_view(), name='form'),
+    path('login/', views.LoginView.as_view(), name='login'),
     path('Add_workout_to_plan.as_view/',
-         views.Add_workout_to_plan.as_view(), name='add_workout_to_plan'),
-    path('details/', views.Details.as_view(), name='details'),
-    path('edit_plan/', views.Edit_plan.as_view(), name='edit_plan'),
-    path('', include(router.urls)),
+         views.AddWorkoutToPlan, name='add_workout_to_plan'),
+    path('details/', views.MyPlanDetails.as_view(), name='details'),
+    path('edit_plan/', views.CreateYourPlan, name='edit_plan'),
 ]
